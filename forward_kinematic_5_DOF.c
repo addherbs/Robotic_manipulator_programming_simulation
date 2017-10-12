@@ -23,4 +23,28 @@ void multiply(int mat1[][N], int mat2[][N], int res[][N])
 }
 
 
+void calculate_disp_matrix(char axis, double displacement, double matDisp[N][N]) {
+	
+	switch (axis) {
+
+	case 'x':
+		printf("this is the x case\n");
+		matDisp[0][N] = displacement;
+		break;
+
+	case 'y':
+		printf("this is the y case\n");
+		matDisp[1][N] = displacement;
+		break;
+
+	case 'z':
+		printf("this is the z case\n");
+		matDisp[2][N] = displacement;
+		break;
+			  
+	default: 
+		printf("this is the default case\n");
+	}
+}
+
 

@@ -6,9 +6,32 @@
 #define M_PI 3.1415927
 #endif
 
+fwd_kin(theta, x){
 
+	double *theta;
+	double x[3];
+	double matDisp[N][N] = {
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
+	};
+	double matRotate[N][N] = {
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
+	};
+	double thetaValue = 30;
+	char axis = 'z';
+	double displacement = 10;
 
-void multiply(int mat1[][N], int mat2[][N], int res[][N])
+	calculate_disp_matrix(axis, displacement, matDisp);
+	calculate_rot_matrix(axis, thetaValue, matRotate);
+
+}
+
+double** multiply(int **mat1, int **mat2, int **res)
 {
     int i, j, k;
     for (i = 0; i < N; i++)
@@ -20,8 +43,8 @@ void multiply(int mat1[][N], int mat2[][N], int res[][N])
                 res[i][j] += mat1[i][k]*mat2[k][j];
         }
     }
+	return &res;
 }
-
 
 void calculate_disp_matrix(char axis, double displacement, double matDisp[N][N]) {
 	
@@ -45,11 +68,9 @@ void calculate_disp_matrix(char axis, double displacement, double matDisp[N][N])
 	default: 
 		printf("this is the default case\n");
 	}
-
 }
 
-
-void calculate_rot_matrix(char axis, double thetaValue, double matRotate[N][N]) {
+void calculate_rot_matrix(char axis, double thetaValue, double **matRotate) {
 
 	double s;
 	double c;
@@ -93,3 +114,8 @@ void calculate_rot_matrix(char axis, double thetaValue, double matRotate[N][N]) 
 }
 
 
+inv_kin(x, theta)
+double *x;
+double theta[6];
+{
+}

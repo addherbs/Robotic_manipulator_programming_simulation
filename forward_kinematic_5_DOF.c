@@ -16,37 +16,40 @@ fwd_kin(theta, x){
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
+	double Tb0[N][N];
 	double matRotate[N][N] = {
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
+	
 	double thetaValue = 30;
 	char axis = 'z';
 	double displacement = 10;
 
 	calculate_disp_matrix(axis, displacement, matDisp);
 	calculate_rot_matrix(axis, thetaValue, matRotate);
+	multiply(calculate_disp_matrix(axis, displacement, matDisp), calculate_rot_matrix(axis, thetaValue, matRotate), Tb0);
 
 }
 
-double** multiply(int **mat1, int **mat2, int **res)
+double** multiply(double **mat1, double **mat2, double **Tb0)
 {
     int i, j, k;
     for (i = 0; i < N; i++)
     {
         for (j = 0; j < N; j++)
         {
-            res[i][j] = 0;
+			Tb0[i][j] = 0;
             for (k = 0; k < N; k++)
-                res[i][j] += mat1[i][k]*mat2[k][j];
+				Tb0[i][j] += mat1[i][k]*mat2[k][j];
         }
     }
-	return &res;
+	return &Tb0;
 }
 
-void calculate_disp_matrix(char axis, double displacement, double matDisp[N][N]) {
+double** calculate_disp_matrix(char axis, double displacement, double **matDisp) {
 	
 	switch (axis) {
 
@@ -68,9 +71,10 @@ void calculate_disp_matrix(char axis, double displacement, double matDisp[N][N])
 	default: 
 		printf("this is the default case\n");
 	}
+	return &matDisp;
 }
 
-void calculate_rot_matrix(char axis, double thetaValue, double **matRotate) {
+double** calculate_rot_matrix(char axis, double thetaValue, double **matRotate) {
 
 	double s;
 	double c;
@@ -110,7 +114,7 @@ void calculate_rot_matrix(char axis, double thetaValue, double **matRotate) {
 		printf("this is the default case\n");
 	}
 
-
+	return &matRotate;
 }
 
 

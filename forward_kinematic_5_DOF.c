@@ -6,14 +6,16 @@
 #define M_PI 3.1415927
 #endif
 
-fwd_kin(theta, x){
+int fwd_kin(theta, x)
+double *theta;
+double x[3];
+{	
+	printf("This is to test \n");
+	printf("%f\t%f\t%f\t%f\t%f\t\n",theta[0],theta[1],theta[2],theta[3],theta[4]);
 
-	double *theta;
-	double x[3];
-	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
-	double d1 = 0.05, d2= 0.05;
-	double theta0 = 30, theta1 = 30, theta2 = 30, theta3 = 30, theta4 = 30;
-
+	double** multiply(double **, double **, double **);
+	double** calculate_rot_matrix(char , double , double **);
+	double** calculate_disp_matrix(char , double , double **);
 	double matDisp[N][N] = {
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
@@ -26,43 +28,76 @@ fwd_kin(theta, x){
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
+
+
 	double Tb0[N][N];
 	double T01[N][N];
 	double T12[N][N];
-	double T23[N][N];
-	double T3Tool[N][N];
+	double T23part1[N][N];
+	double T23part2[N][N];
+	double T3Tool1[N][N];	
+	double T3Tool2[N][N];
+	double T3Tool3[N][N];
+	
+	double Tb1[N][N];
+	double Tb2[N][N];
+	double Tb3[N][N];
+	double FinalMatrix[N][N];
+
+	//double thetaValue = 30;
+	char axis[3]; // = ['x', 'y', 'z'];
+	//printf("%c\n", axis[0]);
 	
 
 
-	double thetaValue = 30;
-	char axis = 'z';
-	double displacement = 10;
+	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
+	double d1 = 0.05, d2 = 0.05;
+	double theta0 = theta[0], theta1 = theta[1], theta2 = theta[2], theta3 = theta[3], theta4 = theta[4];
+	
+	axis[0] = 'a';
+	axis[1] = 'b';
+	axis[2] = 'c';
 
+	// Initial multiplication
+	multiply(calculate_disp_matrix(axis[2], l0, matDisp), calculate_rot_matrix(axis[2], theta0, matRotate), Tb0);
+	
+	calculate_rot_matrix(axis[1], theta1, T01);
 
-	calculate_disp_matrix(axis, displacement, matDisp);
-	calculate_rot_matrix(axis, thetaValue, matRotate);
-	multiply(calculate_disp_matrix(axis, displacement, matDisp), calculate_rot_matrix(axis, thetaValue, matRotate), Tb0);
+	multiply(calculate_disp_matrix(axis[0], l1, matDisp), calculate_rot_matrix(axis[1], theta2, matRotate), T12);
 
-	calculate_rot_matrix(axis, thetaValue, T01);
+	multiply(calculate_disp_matrix(axis[1], d1, matDisp), calculate_disp_matrix(axis[0], l2, matDisp), T23part1);
+	multiply(T23part1, calculate_rot_matrix(axis[1], theta3, matRotate), T23part2);
+	
+	multiply(calculate_disp_matrix(axis[1], d1, matDisp), calculate_disp_matrix(axis[0], l2, matDisp), T3Tool1);
+	multiply(T3Tool1, calculate_disp_matrix(axis[0], l3, matDisp), T3Tool2);
+	multiply(T3Tool2, calculate_rot_matrix(axis[0], theta4, matRotate), T3Tool3);
 
-	multiply(calculate_disp_matrix(axis, displacement, matDisp), calculate_rot_matrix(axis, thetaValue, matRotate), Tb0);
+	// Final multiplication
+	multiply(Tb0,T01 , Tb1);
+	multiply(Tb1, T12, Tb2); 
+	multiply(Tb2, T23part2, Tb3);
+	multiply(Tb3, T3Tool3, FinalMatrix);
 
+	x[0] = FinalMatrix[0][N];
+	x[1] = FinalMatrix[1][N];
+	x[2] = FinalMatrix[2][N];
+	printf("%f\t%f\t%f\t%f\t%f\t",theta[0],theta[1],theta[2],theta[3],theta[4]);
 
 }
 
-double** multiply(double **mat1, double **mat2, double **Tb0)
+double** multiply(double **mat1, double **mat2, double **res)
 {
     int i, j, k;
     for (i = 0; i < N; i++)
     {
         for (j = 0; j < N; j++)
         {
-			Tb0[i][j] = 0;
+			res[i][j] = 0;
             for (k = 0; k < N; k++)
-				Tb0[i][j] += mat1[i][k]*mat2[k][j];
+				res[i][j] += mat1[i][k]*mat2[k][j];
         }
     }
-	return &Tb0;
+	return &res;
 }
 
 double** calculate_disp_matrix(char axis, double displacement, double **matDisp) {
@@ -97,8 +132,8 @@ double** calculate_rot_matrix(char axis, double thetaValue, double **matRotate) 
 	double minusS;
 	
 	double val = M_PI / 180.0;
-	c = cos(thetaValue*val);
-	s = sin(thetaValue*val);
+	c = cos(thetaValue);
+	s = sin(thetaValue);
 	minusS = (-1) * s;
 	
 	switch (axis) {

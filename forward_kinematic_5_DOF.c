@@ -10,27 +10,43 @@ fwd_kin(theta, x){
 
 	double *theta;
 	double x[3];
+	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
+	double d1 = 0.05, d2= 0.05;
+	double theta0 = 30, theta1 = 30, theta2 = 30, theta3 = 30, theta4 = 30;
+
 	double matDisp[N][N] = {
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
-	double Tb0[N][N];
 	double matRotate[N][N] = {
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
+	double Tb0[N][N];
+	double T01[N][N];
+	double T12[N][N];
+	double T23[N][N];
+	double T3Tool[N][N];
 	
+
+
 	double thetaValue = 30;
 	char axis = 'z';
 	double displacement = 10;
 
+
 	calculate_disp_matrix(axis, displacement, matDisp);
 	calculate_rot_matrix(axis, thetaValue, matRotate);
 	multiply(calculate_disp_matrix(axis, displacement, matDisp), calculate_rot_matrix(axis, thetaValue, matRotate), Tb0);
+
+	calculate_rot_matrix(axis, thetaValue, T01);
+
+	multiply(calculate_disp_matrix(axis, displacement, matDisp), calculate_rot_matrix(axis, thetaValue, matRotate), Tb0);
+
 
 }
 

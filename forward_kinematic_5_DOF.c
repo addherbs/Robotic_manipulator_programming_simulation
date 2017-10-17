@@ -177,4 +177,19 @@ inv_kin(x, theta)
 double *x;
 double theta[6];
 {
+	
+	
+	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
+	double d1 = 0.05, d2 = 0.05;
+	
+	double finalTheta0,finalTheta1,finalTheta2,finalTheta3,	finalTheta4 = 0,finalTheta5= 0;
+	double phy1, phy2, gamma, alpha, beta;
+	double inputX = x[0],	inputY = x[1],	inputZ = x[2];
+	
+	double inputD1Sq = pow(d1, 2);
+	
+	double inputXSq = pow(inputX, 2);
+	double inputYSq = pow(inputY, 2);
+	
+	
 }

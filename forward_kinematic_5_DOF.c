@@ -1,4 +1,4 @@
-#include <stdio.h>
+##include <stdio.h>
 #include <math.h>
 
 #define N 4
@@ -6,167 +6,171 @@
 #define M_PI 3.1415927
 #endif
 
-int fwd_kin(theta, x)
-double *theta;
-double x[3];
-{	
-	printf("This is to test \n");
-	printf("%f\t%f\t%f\t%f\t%f\t\n",theta[0],theta[1],theta[2],theta[3],theta[4]);
 
-	double** multiply(double **, double **, double **);
-	double** calculate_rot_matrix(char , double , double **);
-	double** calculate_disp_matrix(char , double , double **);
-	double matDisp[N][N] = {
-		{ 1, 0, 0, 0 },
-		{ 0, 1, 0, 0 },
-		{ 0, 0, 1, 0 },
-		{ 0, 0, 0, 1 }
-	};
-	double matRotate[N][N] = {
-		{ 1, 0, 0, 0 },
-		{ 0, 1, 0, 0 },
-		{ 0, 0, 1, 0 },
-		{ 0, 0, 0, 1 }
-	};
+double **multiplyMatrix(double mat1[][N], double mat2[][N], double result[][N]) {
 
-
-	double Tb0[N][N];
-	double T01[N][N];
-	double T12[N][N];
-	double T23part1[N][N];
-	double T23part2[N][N];
-	double T3Tool1[N][N];	
-	double T3Tool2[N][N];
-	double T3Tool3[N][N];
-	
-	double Tb1[N][N];
-	double Tb2[N][N];
-	double Tb3[N][N];
-	double FinalMatrix[N][N];
-
-	//double thetaValue = 30;
-	char axis[3]; // = ['x', 'y', 'z'];
-	//printf("%c\n", axis[0]);
-	
-
-
-	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
-	double d1 = 0.05, d2 = 0.05;
-	double theta0 = theta[0], theta1 = theta[1], theta2 = theta[2], theta3 = theta[3], theta4 = theta[4];
-	
-	axis[0] = 'a';
-	axis[1] = 'b';
-	axis[2] = 'c';
-
-	// Initial multiplication
-	multiply(calculate_disp_matrix(axis[2], l0, matDisp), calculate_rot_matrix(axis[2], theta0, matRotate), Tb0);
-	
-	calculate_rot_matrix(axis[1], theta1, T01);
-
-	multiply(calculate_disp_matrix(axis[0], l1, matDisp), calculate_rot_matrix(axis[1], theta2, matRotate), T12);
-
-	multiply(calculate_disp_matrix(axis[1], d1, matDisp), calculate_disp_matrix(axis[0], l2, matDisp), T23part1);
-	multiply(T23part1, calculate_rot_matrix(axis[1], theta3, matRotate), T23part2);
-	
-	multiply(calculate_disp_matrix(axis[1], d1, matDisp), calculate_disp_matrix(axis[0], l2, matDisp), T3Tool1);
-	multiply(T3Tool1, calculate_disp_matrix(axis[0], l3, matDisp), T3Tool2);
-	multiply(T3Tool2, calculate_rot_matrix(axis[0], theta4, matRotate), T3Tool3);
-
-	// Final multiplication
-	multiply(Tb0,T01 , Tb1);
-	multiply(Tb1, T12, Tb2); 
-	multiply(Tb2, T23part2, Tb3);
-	multiply(Tb3, T3Tool3, FinalMatrix);
-
-	x[0] = FinalMatrix[0][N];
-	x[1] = FinalMatrix[1][N];
-	x[2] = FinalMatrix[2][N];
-	printf("%f\t%f\t%f\t%f\t%f\t",theta[0],theta[1],theta[2],theta[3],theta[4]);
-
-}
-
-double** multiply(double **mat1, double **mat2, double **res)
-{
-    int i, j, k;
-    for (i = 0; i < N; i++)
-    {
-        for (j = 0; j < N; j++)
-        {
-			res[i][j] = 0;
-            for (k = 0; k < N; k++)
-				res[i][j] += mat1[i][k]*mat2[k][j];
-        }
-    }
-	return &res;
-}
-
-double** calculate_disp_matrix(char axis, double displacement, double **matDisp) {
-	
-	switch (axis) {
-
-	case 'x':
-		printf("this is the x case\n");
-		matDisp[0][N] = displacement;
-		break;
-
-	case 'y':
-		printf("this is the y case\n");
-		matDisp[1][N] = displacement;
-		break;
-
-	case 'z':
-		printf("this is the z case\n");
-		matDisp[2][N] = displacement;
-		break;
-			  
-	default: 
-		printf("this is the default case\n");
+	int i, j, k,x;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			result[i][j] = 0.0;
+			for (x = 0; x < N; x++) {
+				(*(*(result + i) + j)) += (*(*(mat1 + i) + x)) * (*(*(mat2 + x) + j));
+			}
+		}
 	}
-	return &matDisp;
 }
 
-double** calculate_rot_matrix(char axis, double thetaValue, double **matRotate) {
+
+int translation(double x, double y, double z, double D[][N]) {
+	double D1[N][N] = { { 1,0,0,x },{ 0,1,0,y },{ 0,0,1,z },{ 0,0,0,1 } };
+	int i, j;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			D[i][j] = D1[i][j];
+		}
+	}
+	return 0;
+}
+
+int rotationAlongXaxis(double thetaValue, double R[][N]) {
 
 	double s;
 	double c;
+	int i, j;
 	double minusS;
-	
+
 	double val = M_PI / 180.0;
 	c = cos(thetaValue);
 	s = sin(thetaValue);
 	minusS = (-1) * s;
-	
-	switch (axis) {
-	case 'x':
-		printf("this is the x case\n");
-		matRotate[1][1] = c;
-		matRotate[1][2] = minusS;
-		matRotate[2][1] = s;
-		matRotate[2][2] = c;
-		break;
 
-	case 'y':
-		printf("this is the y case\n");
-		matRotate[0][0] = c;
-		matRotate[0][2] = minusS;
-		matRotate[2][0] = s;
-		matRotate[2][2] = c;
-		break;
 
-	case 'z':
-		printf("this is the z case\n");
-		matRotate[0][0] = c;
-		matRotate[0][1] = minusS;
-		matRotate[1][0] = s;
-		matRotate[1][1] = c;
-		break;
+	double Rx[N][N] = { { 1,0,0,0 },
+	{ 0,c,minusS,0 },
+	{ 0,s,c,0 },
+	{ 0,0,0,1 }
+	};
 
-	default:
-		printf("this is the default case\n");
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			R[i][j] = Rx[i][j];
+		}
 	}
-
-	return &matRotate;
+	return 0;
 }
+
+int rotationAlongYaxis(double thetaValue, double R[][N]) {
+
+	double s;
+	double c;
+	int i, j;
+	double minusS;
+
+	double val = M_PI / 180.0;
+	c = cos(thetaValue);
+	s = sin(thetaValue);
+	minusS = (-1) * s;
+
+
+	double Ry[N][N] = { { c,0,s,0 },
+	{ 0,1,0,0 },
+	{ minusS,0,c,0 },
+	{ 0,0,0,1 }
+	};
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			R[i][j] = Ry[i][j];
+		}
+	}
+	return 0;
+}
+
+int rotationAlongZaxis(double thetaValue, double R[][N]) {
+
+	double s;
+	double c;
+	int i, j;
+	double minusS;
+
+	double val = M_PI / 180.0;
+	c = cos(thetaValue);
+	s = sin(thetaValue);
+	minusS = (-1) * s;
+
+
+	double Rz[N][N] = { { c,minusS,0,0 },
+	{ s,c,0,0 },
+	{ 0,0,1,0 },
+	{ 0,0,0,1 }
+	};
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			R[i][j] = Rz[i][j];
+		}
+	}
+	return 0;
+}
+
+
+fwd_kin(theta, x)
+double *theta;
+double x[3];
+{
+	double l0 = 0.25, l1 = 0.25, l2 = 0.25, l3 = 0.15;
+	double d1 = 0.05, d2 = 0.05;
+	char axis[N];
+	
+	double Rzt0[N][N], Ryt1[N][N], Ryt2[N][N], Ryt3[N][N], Rxt4[N][N];
+
+	double finalR1[N][N], finalR2[N][N], finalR3[N][N], FinalMatrix[N][N], 
+				Transformation1to2[N][N], TransformationBaseto0[N][N], Transformation2to1part1[N][N], 
+				Transformation2to3[N][N], Transformation3to4part1[N][N], Transformation3to4part2[N][N], Transformation3to4Final[N][N];
+	
+	double DisplaceZL0[N][N],DisplaceXL1[N][N],DisplaceXL2[N][N],DisplaceYD1[N][N],DisplaceZL2[N][N],DisplaceXL3[N][N];
+
+	axis[0] = 'x';
+	axis[1] = 'y';
+	axis[2] = 'z';
+	
+	
+	translation(0, 0, l0, DisplaceZL0);
+
+	translation(0, d1, 0, DisplaceYD1);
+	translation(0, 0, d2, DisplaceZL2);
+
+	translation(l1, 0, 0, DisplaceXL1);
+	translation(l2, 0, 0, DisplaceXL2);
+	translation(l3, 0, 0, DisplaceXL3);
+
+	rotationAlongZaxis(theta[0], Rzt0);
+	rotationAlongYaxis(theta[1], Ryt1);
+	rotationAlongYaxis(theta[2], Ryt2);
+	rotationAlongYaxis(theta[3], Ryt3);
+	rotationAlongYaxis(theta[N], Rxt4);
+
+
+	multiplyMatrix(DisplaceXL3, Rxt4, Transformation3to4part1);
+	multiplyMatrix(DisplaceZL2, Transformation3to4part1, Transformation3to4part2);
+	multiplyMatrix(DisplaceYD1, Transformation3to4part2, Transformation3to4Final);
+
+	multiplyMatrix(DisplaceXL2, Ryt3, Transformation2to1part1);
+	multiplyMatrix(DisplaceYD1, Transformation2to1part1, Transformation2to3);
+
+
+	multiplyMatrix(DisplaceXL1, Ryt2, Transformation1to2);
+
+	multiplyMatrix(DisplaceZL0, Rzt0, TransformationBaseto0);
+
+
+	multiplyMatrix(Transformation2to3, Transformation3to4Final, finalR1);
+	multiplyMatrix(Transformation1to2, finalR1, finalR2);
+	multiplyMatrix(Ryt1, finalR2, finalR3);
+	multiplyMatrix(TransformationBaseto0, finalR3, FinalMatrix);
+
+	x[0] = FinalMatrix[0][3];	x[1] = FinalMatrix[1][3];	x[2] = FinalMatrix[2][3];
+
+}
+
 
 
 inv_kin(x, theta)

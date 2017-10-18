@@ -191,5 +191,23 @@ double theta[6];
 	double inputXSq = pow(inputX, 2);
 	double inputYSq = pow(inputY, 2);
 	
+	double R = sqrt(inputXSq + inputYSq);
+
+	double alphaValue = atan(inputX / inputY);
+		
+	double acosValueD1 = acos((2 * d1) / R) ;
+	
+	finalTheta0 = acosValueD1 - alphaValue;
+	
+	theta[4] = finalTheta4;
+	theta[5] = finalTheta5;
+
+	if (inputX < 0 && inputY < 0) {
+		finalTheta0 = finalTheta0 - M_PI;
+	}
+	else if (inputY < 0) {
+		finalTheta0 = finalTheta0 - M_PI;
+	}
+	
 	
 }
